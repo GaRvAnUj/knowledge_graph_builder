@@ -1,0 +1,306 @@
+// Neo4j Cypher Queries for Knowledge Graph Reasoning
+// Research Publications Domain
+
+// ============================================================================
+// SECTION 1: BASIC QUERIES - Single Entity Lookups
+// ============================================================================
+
+// Q1: Find all authors
+MATCH (a:Author)
+RETURN a.name, a.email, a.researchFocus
+ORDER BY a.name
+
+// Q2: Find all papers published after 2015
+MATCH (p:Paper)
+WHERE p.year > 2015
+RETURN p.title, p.year, p.citations
+ORDER BY p.year DESC
+
+// Q3: Find all research fields
+MATCH (f:Field)
+RETURN f.name, f.description
+
+// Q4: Find all universities ranked top 3
+MATCH (u:University)
+WHERE u.ranking <= 3
+RETURN u.name, u.country, u.ranking
+ORDER BY u.ranking
+
+
+// ============================================================================
+// SECTION 2: RELATIONSHIP TRAVERSAL - Direct Connections
+// ============================================================================
+
+// Q5: Find all papers written by a specific author
+MATCH (a:Author {name: "Christopher Manning"})-[:WRITES]->(p:Paper)
+RETURN a.name, p.title, p.year, p.citations
+ORDER BY p.citations DESC
+
+// Q6: Find all authors affiliated with Stanford
+MATCH (u:University {name: "Stanford"})<-[:AFFILIATED_WITH]-(a:Author)
+RETURN a.name, a.researchFocus
+
+// Q7: Find papers in a specific field
+MATCH (p:Paper)-[:BELONGS_TO]->(f:Field {name: "Natural Language Processing"})
+RETURN p.title, p.year, p.citations
+ORDER BY p.citations DESC
+
+// Q8: Find research interests of authors
+MATCH (a:Author)-[:STUDIES]->(f:Field)
+RETURN a.name, f.name, a.researchFocus
+ORDER BY a.name
+
+
+// ============================================================================
+// SECTION 3: MULTI-HOP QUERIES - Indirect Relationships & Reasoning
+// ============================================================================
+
+// Q9: Find all authors working in NLP
+MATCH (a:Author)-[:STUDIES]->(f:Field {name: "Natural Language Processing"})
+RETURN DISTINCT a.name
+ORDER BY a.name
+
+// Q10: Find NLP researchers and their universities
+MATCH (a:Author)-[:STUDIES]->(f:Field {name: "Natural Language Processing"})
+MATCH (a)-[:AFFILIATED_WITH]->(u:University)
+RETURN a.name, u.name, u.country
+ORDER BY u.country, u.name, a.name
+
+// Q11: Find papers authored by Deep Learning specialists
+MATCH (a:Author)-[:STUDIES]->(f:Field {name: "Deep Learning"})
+MATCH (a)-[:WRITES]->(p:Paper)
+RETURN DISTINCT a.name, p.title, p.year
+ORDER BY p.year DESC
+
+// Q12: Find research fields studied at MIT
+MATCH (u:University {name: "MIT"})<-[:AFFILIATED_WITH]-(a:Author)
+MATCH (a)-[:STUDIES]->(f:Field)
+RETURN DISTINCT u.name, f.name
+ORDER BY f.name
+
+
+// ============================================================================
+// SECTION 4: COLLABORATION NETWORKS - Finding Connected Researchers
+// ============================================================================
+
+// Q13: Find direct co-authors (1 hop)
+MATCH (a1:Author {name: "Christopher Manning"})-[:CO_AUTHORS_WITH]-(a2:Author)
+RETURN a1.name as researcher, a2.name as coauthor, a2.email
+
+// Q14: Find all collaborators through 2 hops
+MATCH (target:Author {name: "Christopher Manning"})-[:CO_AUTHORS_WITH*1..2]-(colleague:Author)
+WHERE colleague.id <> target.id
+RETURN DISTINCT colleague.name
+ORDER BY colleague.name
+
+// Q15: Find research collaboration opportunities (same field, different universities)
+MATCH (a1:Author)-[:STUDIES]->(f:Field)
+MATCH (a1)-[:AFFILIATED_WITH]->(u1:University)
+MATCH (a2:Author)-[:STUDIES]->(f)
+MATCH (a2)-[:AFFILIATED_WITH]->(u2:University)
+WHERE a1.id < a2.id AND u1.id <> u2.id
+RETURN f.name as field, 
+       a1.name as author1, u1.name as univ1,
+       a2.name as author2, u2.name as univ2
+ORDER BY f.name, a1.name
+
+// Q16: Find potential bridging researchers (who collaborate across different fields)
+MATCH (a1:Author)-[:WRITES]->(p1:Paper)-[:BELONGS_TO]->(f1:Field)
+MATCH (a1)-[:WRITES]->(p2:Paper)-[:BELONGS_TO]->(f2:Field)
+WHERE f1.id < f2.id
+RETURN a1.name, f1.name, f2.name
+ORDER BY a1.name
+
+
+// ============================================================================
+// SECTION 5: CITATION NETWORKS - Knowledge Propagation & Impact
+// ============================================================================
+
+// Q17: Find citation relationships
+MATCH (p1:Paper)-[r:REFERENCES]->(p2:Paper)
+RETURN p1.title as 'Citing Paper', 
+       p2.title as 'Cited Paper',
+       r.context as context
+
+// Q18: Find papers that influenced a specific paper
+MATCH (cited:Paper {title: "Attention is All You Need"})<-[:REFERENCES]-(citing:Paper)
+RETURN cited.title as influential_paper,
+       COUNT(citing) as citations_received
+ORDER BY citations_received DESC
+
+// Q19: Trace citation chains (papers referencing papers that reference papers)
+MATCH path = (p1:Paper)-[:REFERENCES*2]->(p3:Paper)
+RETURN p1.title, p3.title, LENGTH(path) as hops
+LIMIT 10
+
+// Q20: Find most cited papers in each field
+MATCH (p:Paper)-[:BELONGS_TO]->(f:Field)
+WITH f, p ORDER BY p.citations DESC
+RETURN f.name as field, 
+       COLLECT(p.title)[0] as most_cited, 
+       COLLECT(p.citations)[0] as citation_count
+
+
+// ============================================================================
+// SECTION 6: AGGREGATION & ANALYTICS - Insights & Patterns
+// ============================================================================
+
+// Q21: Count papers per author
+MATCH (a:Author)-[:WRITES]->(p:Paper)
+RETURN a.name, COUNT(p) as paper_count, AVG(p.citations) as avg_citations
+ORDER BY paper_count DESC
+
+// Q22: Most published year
+MATCH (p:Paper)
+RETURN p.year, COUNT(p) as paper_count
+ORDER BY p.year DESC
+
+// Q23: Universities with most NLP researchers
+MATCH (a:Author)-[:STUDIES]->(f:Field {name: "Natural Language Processing"})
+MATCH (a)-[:AFFILIATED_WITH]->(u:University)
+RETURN u.name, COUNT(DISTINCT a) as nlp_researchers
+ORDER BY nlp_researchers DESC
+
+// Q24: Average citation impact by field
+MATCH (p:Paper)-[:BELONGS_TO]->(f:Field)
+RETURN f.name, AVG(p.citations) as avg_citations, COUNT(p) as paper_count
+ORDER BY avg_citations DESC
+
+// Q25: Collaboration frequency between universities
+MATCH (a1:Author)-[:AFFILIATED_WITH]->(u1:University)
+MATCH (a1)-[:CO_AUTHORS_WITH]-(a2:Author)
+MATCH (a2)-[:AFFILIATED_WITH]->(u2:University)
+WHERE u1.id < u2.id
+RETURN u1.name as university1, u2.name as university2, COUNT(DISTINCT a1) as collaborations
+ORDER BY collaborations DESC
+
+
+// ============================================================================
+// SECTION 7: EXPERT FINDING - Identifying Domain Specialists
+// ============================================================================
+
+// Q26: Find experts in a specific field (by years of experience)
+MATCH (a:Author)-[s:STUDIES {yearsExperience: 25}]->(f:Field)
+RETURN a.name, f.name, s.yearsExperience as experience
+ORDER BY s.yearsExperience DESC
+
+// Q27: Find top researchers by paper count in Deep Learning
+MATCH (a:Author)-[:STUDIES]->(f:Field {name: "Deep Learning"})
+MATCH (a)-[:WRITES]->(p:Paper)
+WITH a, f, COUNT(p) as papers, AVG(p.citations) as avg_cites
+RETURN a.name, papers, avg_cites, f.name
+ORDER BY papers DESC
+
+// Q28: Find emerging researchers (recent publications, high citations)
+MATCH (a:Author)-[:WRITES]->(p:Paper)
+WHERE p.year >= 2020
+RETURN a.name, COUNT(p) as recent_papers, AVG(p.citations) as avg_citations
+ORDER BY avg_citations DESC
+LIMIT 10
+
+// Q29: Find multi-disciplinary experts (researchers in multiple fields)
+MATCH (a:Author)-[:STUDIES]->(f:Field)
+WITH a, COUNT(f) as field_count, COLLECT(f.name) as fields
+WHERE field_count >= 2
+RETURN a.name, field_count, fields
+ORDER BY field_count DESC
+
+
+// ============================================================================
+// SECTION 8: ADVANCED REASONING - Complex Patterns
+// ============================================================================
+
+// Q30: Find potential research gaps (topics with less collaboration)
+MATCH (f:Field)<-[:BELONGS_TO]-(p:Paper)
+MATCH (p)<-[:WRITES]-(a:Author)
+WITH f, COUNT(DISTINCT a) as researcher_count, COUNT(p) as paper_count
+WHERE researcher_count < 3
+RETURN f.name, researcher_count, paper_count
+ORDER BY paper_count ASC
+
+// Q31: Find knowledge transfer paths (who might have influenced whom)
+MATCH (a1:Author)-[:WRITES]->(p1:Paper)-[:REFERENCES*1..2]->(p2:Paper)<-[:WRITES]-(a2:Author)
+WHERE a1.id <> a2.id
+RETURN DISTINCT a1.name as originator, a2.name as influenced_by
+ORDER BY a1.name
+
+// Q32: Find complementary researchers (different expertise, same field)
+MATCH (a1:Author)-[:AFFILIATED_WITH]->(u1:University)
+MATCH (a1)-[:STUDIES]->(f1:Field)
+MATCH (a2:Author)-[:AFFILIATED_WITH]->(u2:University)
+MATCH (a2)-[:STUDIES]->(f2:Field)
+WHERE a1.id < a2.id 
+  AND u1.name = u2.name
+  AND f1.id <> f2.id
+RETURN u1.name as university,
+       a1.name, f1.name,
+       a2.name, f2.name
+ORDER BY u1.name, a1.name
+
+// Q33: Find research clusters (groups of interconnected researchers)
+MATCH (a:Author)-[:CO_AUTHORS_WITH]-(colleague:Author)
+WITH a, COUNT(colleague) as collaboration_degree
+WHERE collaboration_degree >= 2
+RETURN a.name, a.researchFocus, collaboration_degree
+ORDER BY collaboration_degree DESC
+
+// Q34: Identify knowledge hubs (authors connecting different fields)
+MATCH (a:Author)-[:WRITES]->(p:Paper)
+MATCH (p)-[:BELONGS_TO]->(f:Field)
+WITH a, COUNT(DISTINCT f) as field_variety, COLLECT(DISTINCT f.name) as fields
+WHERE field_variety >= 2
+RETURN a.name, field_variety, fields
+ORDER BY field_variety DESC
+
+
+// ============================================================================
+// SECTION 9: GRAPH PROPERTIES & STRUCTURE
+// ============================================================================
+
+// Q35: Find the most connected authors (highest degree centrality)
+MATCH (a:Author)-[r]-()
+RETURN a.name, COUNT(r) as connections
+ORDER BY connections DESC
+LIMIT 10
+
+// Q36: Find shortest paths between two authors (collaboration distance)
+MATCH path = SHORTEST (a1:Author {name: "Christopher Manning"})-[*]-(a2:Author {name: "Fei-Fei Li"})
+RETURN LENGTH(path) as distance, [node IN NODES(path) | node.name] as path_nodes
+
+// Q37: Find clustering coefficient (triangular relationships in author network)
+MATCH (a1:Author)-[:CO_AUTHORS_WITH]-(a2:Author)-[:CO_AUTHORS_WITH]-(a3:Author)-[:CO_AUTHORS_WITH]-(a1)
+RETURN COUNT(DISTINCT [a1, a2, a3]) as triangles / 3 as clustering_count
+
+// Q38: Find connected components (research communities)
+CALL algo.shortestPath.stream("MATCH (a:Author) RETURN id(a) as id", "MATCH (a1:Author)--(a2:Author) RETURN id(a1) as source, id(a2) as target", {})
+YIELD nodes, cost
+RETURN COUNT(DISTINCT nodes) as communities
+
+
+// ============================================================================
+// SECTION 10: PARAMETERIZED QUERIES (For Application Use)
+// ============================================================================
+
+// Q39: Find all papers by author (parameterized)
+// Usage: Pass authorName as parameter
+MATCH (a:Author {name: $authorName})-[:WRITES]->(p:Paper)
+RETURN p.title, p.year, p.citations
+ORDER BY p.citations DESC
+
+// Q40: Find collaborators in a field (parameterized)
+// Usage: Pass fieldName as parameter
+MATCH (a:Author)-[:STUDIES]->(f:Field {name: $fieldName})
+RETURN DISTINCT a.name, a.email
+ORDER BY a.name
+
+// Q41: Find papers referenced by a paper (parameterized)
+// Usage: Pass paperTitle as parameter
+MATCH (p:Paper {title: $paperTitle})-[:REFERENCES]->(cited:Paper)
+RETURN cited.title, cited.year, cited.citations
+ORDER BY cited.citations DESC
+
+// Q42: Find papers citing a paper (parameterized)
+// Usage: Pass paperTitle as parameter
+MATCH (citing:Paper)-[:REFERENCES]->(p:Paper {title: $paperTitle})
+RETURN citing.title, citing.year
+ORDER BY citing.year DESC

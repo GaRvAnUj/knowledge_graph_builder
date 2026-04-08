@@ -1,0 +1,123 @@
+{
+  "universities": [
+    {"id": "uni_1", "name": "MIT", "country": "USA", "ranking": 1},
+    {"id": "uni_2", "name": "Stanford", "country": "USA", "ranking": 2},
+    {"id": "uni_3", "name": "Cambridge", "country": "UK", "ranking": 3},
+    {"id": "uni_4", "name": "UC Berkeley", "country": "USA", "ranking": 5},
+    {"id": "uni_5", "name": "Oxford", "country": "UK", "ranking": 6}
+  ],
+  "fields": [
+    {"id": "field_1", "name": "Natural Language Processing", "description": "Study of computational linguistics and text"},
+    {"id": "field_2", "name": "Machine Learning", "description": "Algorithms that learn from data"},
+    {"id": "field_3", "name": "Computer Vision", "description": "Image and video understanding"},
+    {"id": "field_4", "name": "Deep Learning", "description": "Neural networks with multiple layers"}
+  ],
+  "authors": [
+    {"id": "author_1", "name": "Yoshua Bengio", "email": "yoshua@mila.quebec", "researchFocus": "Deep Learning"},
+    {"id": "author_2", "name": "Yann LeCun", "email": "yann@fb.com", "researchFocus": "Deep Learning"},
+    {"id": "author_3", "name": "Geoffrey Hinton", "email": "hinton@toronto.edu", "researchFocus": "Neural Networks"},
+    {"id": "author_4", "name": "Fei-Fei Li", "email": "fei-fei@stanford.edu", "researchFocus": "Computer Vision"},
+    {"id": "author_5", "name": "Mihai Surdeanu", "email": "mihai@arizona.edu", "researchFocus": "NLP"},
+    {"id": "author_6", "name": "Christopher Manning", "email": "manning@stanford.edu", "researchFocus": "NLP"},
+    {"id": "author_7", "name": "Ashish Vaswani", "email": "aswani@google.com", "researchFocus": "Deep Learning, NLP"}
+  ],
+  "conferences": [
+    {"id": "conf_1", "name": "ACL", "year": 2023, "location": "Toronto", "acronym": "ACL2023"},
+    {"id": "conf_2", "name": "NeurIPS", "year": 2022, "location": "New Orleans", "acronym": "NeurIPS2022"},
+    {"id": "conf_3", "name": "ICML", "year": 2023, "location": "Honolulu", "acronym": "ICML2023"},
+    {"id": "conf_4", "name": "ICCV", "year": 2023, "location": "Paris", "acronym": "ICCV2023"}
+  ],
+  "papers": [
+    {
+      "id": "paper_1",
+      "title": "Attention is All You Need",
+      "year": 2017,
+      "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration.",
+      "doi": "10.5555/3295222.3295349",
+      "citations": 85000,
+      "authors": ["author_7"],
+      "fields": ["field_1", "field_4"],
+      "conference": "conf_2"
+    },
+    {
+      "id": "paper_2",
+      "title": "ImageNet Classification with Deep Convolutional Neural Networks",
+      "year": 2012,
+      "abstract": "We trained a large, deep convolutional neural network to classify the 1.2 million high-resolution images in the LSSVRC-2010 ImageNet into 1000 different classes.",
+      "doi": "10.1145/3065386",
+      "citations": 103000,
+      "authors": ["author_2"],
+      "fields": ["field_3", "field_4"],
+      "conference": "conf_3"
+    },
+    {
+      "id": "paper_3",
+      "title": "Learning Phrase Representations using RNN Encoder–Decoder for Statistical Machine Translation",
+      "year": 2014,
+      "abstract": "We propose a novel neural network model called RNN Encoder–Decoder that learns phrase representations.",
+      "doi": "10.3115/v1/D14-1179",
+      "citations": 15000,
+      "authors": ["author_1"],
+      "fields": ["field_1", "field_4"],
+      "conference": "conf_1"
+    },
+    {
+      "id": "paper_4",
+      "title": "Deep Learning for Molecular Generation and Optimization",
+      "year": 2021,
+      "abstract": "This paper surveys deep learning approaches for molecular generation.",
+      "doi": "10.1234/survey",
+      "citations": 2500,
+      "authors": ["author_5", "author_6"],
+      "fields": ["field_1", "field_4"],
+      "conference": "conf_2"
+    },
+    {
+      "id": "paper_5",
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers",
+      "year": 2019,
+      "abstract": "We introduce BERT, a new method of pre-training language representations.",
+      "doi": "10.48550/arXiv.1810.04805",
+      "citations": 75000,
+      "authors": ["author_6"],
+      "fields": ["field_1", "field_4"],
+      "conference": "conf_1"
+    },
+    {
+      "id": "paper_6",
+      "title": "Object Detection with Faster R-CNN",
+      "year": 2015,
+      "abstract": "We propose Faster R-CNN, an object detection framework based on deep convolutional networks.",
+      "doi": "10.1109/ICCV.2015.169",
+      "citations": 45000,
+      "authors": ["author_4"],
+      "fields": ["field_3", "field_2"],
+      "conference": "conf_4"
+    }
+  ],
+  "affiliations": [
+    {"authorId": "author_1", "universityId": "uni_1", "role": "Professor", "startYear": 2005, "endYear": null},
+    {"authorId": "author_2", "universityId": "uni_2", "role": "Researcher", "startYear": 2013, "endYear": null},
+    {"authorId": "author_3", "universityId": "uni_5", "role": "Professor", "startYear": 1987, "endYear": null},
+    {"authorId": "author_4", "universityId": "uni_2", "role": "Professor", "startYear": 2009, "endYear": null},
+    {"authorId": "author_5", "universityId": "uni_4", "role": "Associate Professor", "startYear": 2015, "endYear": null},
+    {"authorId": "author_6", "universityId": "uni_2", "role": "Professor", "startYear": 2000, "endYear": null},
+    {"authorId": "author_7", "universityId": "uni_2", "role": "Researcher", "startYear": 2016, "endYear": 2017}
+  ],
+  "studies": [
+    {"authorId": "author_1", "fieldId": "field_4", "yearsExperience": 30},
+    {"authorId": "author_2", "fieldId": "field_4", "yearsExperience": 35},
+    {"authorId": "author_3", "fieldId": "field_4", "yearsExperience": 40},
+    {"authorId": "author_4", "fieldId": "field_3", "yearsExperience": 20},
+    {"authorId": "author_5", "fieldId": "field_1", "yearsExperience": 15},
+    {"authorId": "author_6", "fieldId": "field_1", "yearsExperience": 25},
+    {"authorId": "author_7", "fieldId": "field_1", "yearsExperience": 12}
+  ],
+  "references": [
+    {"citingPaperId": "paper_5", "citedPaperId": "paper_1", "context": "methodological"},
+    {"citingPaperId": "paper_2", "citedPaperId": "paper_1", "context": "theoretical"},
+    {"citingPaperId": "paper_4", "citedPaperId": "paper_3", "context": "empirical"},
+    {"citingPaperId": "paper_5", "citedPaperId": "paper_3", "context": "methodological"},
+    {"citingPaperId": "paper_6", "citedPaperId": "paper_2", "context": "methodological"}
+  ]
+}
