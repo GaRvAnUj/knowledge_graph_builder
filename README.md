@@ -14,19 +14,6 @@ This project demonstrates **knowledge representation and reasoning using knowled
 
 ---
 
-## 📁 Project Structure
-
-```
-d:\coding\nlp\task3\
-├── README.md                      # This file
-├── SCHEMA.md                      # Domain schema definition
-├── sample_data.json               # Knowledge base dataset
-├── knowledge_graph_builder.py     # Python script to build and query graph
-├── cypher_queries.txt             # Comprehensive Cypher query reference
-└── setup_instructions.txt         # Detailed setup guide
-```
-
----
 
 ## 🏗️ Domain Architecture
 
