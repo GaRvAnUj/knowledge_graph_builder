@@ -281,7 +281,7 @@ def main():
     # Configuration
     NEO4J_URI = "bolt://localhost:7687"
     USERNAME = "neo4j"
-    PASSWORD = "2026#Isend" 
+    PASSWORD = "PASSWORD" 
 
     # Get the data file path
     current_dir = os.path.dirname(os.path.abspath(__file__))
